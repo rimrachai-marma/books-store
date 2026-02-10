@@ -23,7 +23,7 @@ export class UserService {
   }
 
   async getAllUsers() {
-    await this.db
+    return this.db
       .select({
         id: users.id,
         name: users.name,

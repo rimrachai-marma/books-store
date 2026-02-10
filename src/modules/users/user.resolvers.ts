@@ -37,6 +37,17 @@ export const userResolvers = {
       const bookServiceInstance = new bookService(context.db);
       return bookServiceInstance.getBooksByUserId(parent.id);
     },
+
+    reviews: async (
+      parent: { id: string },
+      _: unknown,
+      context: GraphQLContext,
+    ) => {
+      const reviewService = (await import("../reviews/review.service"))
+        .ReviewService;
+      const reviewServiceInstance = new reviewService(context.db);
+      return reviewServiceInstance.getReviewsByUserId(parent.id);
+    },
   },
 
   Mutation: {

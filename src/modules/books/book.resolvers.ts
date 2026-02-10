@@ -65,12 +65,23 @@ export const bookResolvers = {
       const authorServiceInstance = new authorService(context.db);
       return authorServiceInstance.getAuthorById(parent.authorId);
     },
+
+    reviews: async (
+      parent: { id: string },
+      _: unknown,
+      context: GraphQLContext,
+    ) => {
+      const reviewService = (await import("../reviews/review.service"))
+        .ReviewService;
+      const reviewServiceInstance = new reviewService(context.db);
+      return reviewServiceInstance.getReviewsByBookId(parent.id);
+    },
   },
 
   Mutation: {
     createBook: async (
       _: unknown,
-      { title, authorId }: { title: string; authorId: string },
+      { input }: { input: { title: string; authorId: string } },
       context: GraphQLContext,
     ) => {
       if (!context.user) {
@@ -79,8 +90,8 @@ export const bookResolvers = {
 
       const bookService = new BookService(context.db);
       return bookService.createBook({
-        title,
-        authorId,
+        title: input.title,
+        authorId: input.authorId,
         userId: context.user.id,
       });
     },
