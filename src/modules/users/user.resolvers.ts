@@ -9,7 +9,6 @@ export const userResolvers = {
       }
 
       const userService = new UserService(context.db);
-      return userService.getUserById(context.user.id);
     },
 
     user: async (
@@ -18,35 +17,28 @@ export const userResolvers = {
       context: GraphQLContext,
     ) => {
       const userService = new UserService(context.db);
-      return userService.getUserById(userId);
     },
 
-    users: async (_: unknown, __: unknown, context: GraphQLContext) => {
+    users: async (
+      _: unknown,
+      args: {
+        first?: number;
+        after?: string;
+        last?: number;
+        before?: string;
+        filter?: {
+          search?: string;
+          createdAfter?: string;
+          createdBefore?: string;
+        };
+        sort: {
+          field: "NAME" | "CREATED_AT";
+          direction: "ASC" | "DESC";
+        };
+      },
+      context: GraphQLContext,
+    ) => {
       const userService = new UserService(context.db);
-      return userService.getAllUsers();
-    },
-  },
-
-  User: {
-    books: async (
-      parent: { id: string },
-      _: unknown,
-      context: GraphQLContext,
-    ) => {
-      const bookService = (await import("../books/book.service")).BookService;
-      const bookServiceInstance = new bookService(context.db);
-      return bookServiceInstance.getBooksByUserId(parent.id);
-    },
-
-    reviews: async (
-      parent: { id: string },
-      _: unknown,
-      context: GraphQLContext,
-    ) => {
-      const reviewService = (await import("../reviews/review.service"))
-        .ReviewService;
-      const reviewServiceInstance = new reviewService(context.db);
-      return reviewServiceInstance.getReviewsByUserId(parent.id);
     },
   },
 

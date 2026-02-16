@@ -1,16 +1,63 @@
 export const authorTypeDefs = /* GraphQL */ `
+  scalar Cursor
+  scalar DateTime
+
   type Author {
     id: ID!
     name: String!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
 
-    books: [Book!]!
+  type AuthorEdge {
+    node: Author!
+    cursor: Cursor!
+  }
+
+  type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: Cursor
+    endCursor: Cursor
+  }
+
+  type AuthorConnection {
+    edges: [AuthorEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+  }
+
+  input AuthorFilterInput {
+    nameContains: String
+    createdAfter: DateTime
+    createdBefore: DateTime
+  }
+
+  enum AuthorSortField {
+    NAME
+    CREATED_AT
+  }
+
+  enum SortDirection {
+    ASC
+    DESC
+  }
+
+  input AuthorSortInput {
+    field: AuthorSortField!
+    direction: SortDirection! = DESC
   }
 
   type Query {
     author(id: ID!): Author
-    authors: [Author!]!
+    authors(
+      filter: AuthorFilterInput
+      sort: AuthorSortInput
+      first: Int
+      after: Cursor
+      last: Int
+      before: Cursor
+    ): AuthorConnection!
   }
 
   input CreateAuthorInput {

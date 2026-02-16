@@ -9,24 +9,28 @@ export const authorResolvers = {
       context: GraphQLContext,
     ) => {
       const authorService = new AuthorService(context.db);
-      return authorService.getAuthorById(id);
     },
 
-    authors: async (_: unknown, __: unknown, context: GraphQLContext) => {
-      const authorService = new AuthorService(context.db);
-      return authorService.getAllAuthors();
-    },
-  },
-
-  Author: {
-    books: async (
-      parent: { id: string },
+    authors: async (
       _: unknown,
+      args: {
+        first?: number;
+        after?: string;
+        last?: number;
+        before?: string;
+        filter?: {
+          nameContains?: string;
+          createdAfter?: string;
+          createdBefore?: string;
+        };
+        sort: {
+          field: "NAME" | "CREATED_AT";
+          direction: "ASC" | "DESC";
+        };
+      },
       context: GraphQLContext,
     ) => {
-      const bookService = (await import("../books/book.service")).BookService;
-      const bookServiceInstance = new bookService(context.db);
-      return bookServiceInstance.getBooksByAuthorId(parent.id);
+      const authorService = new AuthorService(context.db);
     },
   },
 

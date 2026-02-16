@@ -9,38 +9,29 @@ export const bookResolvers = {
       context: GraphQLContext,
     ) => {
       const bookService = new BookService(context.db);
-      return bookService.getBookById(id);
     },
 
-    books: async (_: unknown, __: unknown, context: GraphQLContext) => {
-      const bookService = new BookService(context.db);
-      return bookService.getAllBooks();
-    },
-
-    authorBooks: async (
+    books: async (
       _: unknown,
-      { authorId }: { authorId: string },
+      args: {
+        first?: number;
+        after?: string;
+        last?: number;
+        before?: string;
+        filter?: {
+          authorId?: string;
+          titleContains?: string;
+          createdAfter?: string;
+          createdBefore?: string;
+        };
+        sort: {
+          field: "TITLE" | "CREATED_AT";
+          direction: "ASC" | "DESC";
+        };
+      },
       context: GraphQLContext,
     ) => {
       const bookService = new BookService(context.db);
-      return bookService.getBooksByAuthorId(authorId);
-    },
-
-    userBooks: async (
-      _: unknown,
-      { userId }: { userId: string },
-      context: GraphQLContext,
-    ) => {
-      const bookService = new BookService(context.db);
-      return bookService.getBooksByUserId(userId);
-    },
-
-    myBooks: async (_: unknown, __: unknown, context: GraphQLContext) => {
-      if (!context.user) {
-        throw new Error("Not authenticated");
-      }
-      const bookService = new BookService(context.db);
-      return bookService.getBooksByUserId(context.user.id);
     },
   },
 
@@ -49,33 +40,13 @@ export const bookResolvers = {
       parent: { userId: string },
       _: unknown,
       context: GraphQLContext,
-    ) => {
-      const userService = (await import("../users/user.service")).UserService;
-      const userServiceInstance = new userService(context.db);
-      return userServiceInstance.getUserById(parent.userId);
-    },
+    ) => {},
 
     author: async (
       parent: { authorId: string },
       _: unknown,
       context: GraphQLContext,
-    ) => {
-      const authorService = (await import("../authors/author.service"))
-        .AuthorService;
-      const authorServiceInstance = new authorService(context.db);
-      return authorServiceInstance.getAuthorById(parent.authorId);
-    },
-
-    reviews: async (
-      parent: { id: string },
-      _: unknown,
-      context: GraphQLContext,
-    ) => {
-      const reviewService = (await import("../reviews/review.service"))
-        .ReviewService;
-      const reviewServiceInstance = new reviewService(context.db);
-      return reviewServiceInstance.getReviewsByBookId(parent.id);
-    },
+    ) => {},
   },
 
   Mutation: {
